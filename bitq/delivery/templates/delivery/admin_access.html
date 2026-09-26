@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BitQ | Admin access</title>
+    <style>
+        :root {
+            --page: #eff5f5;
+            --panel: #ffffff;
+            --ink: #192b35;
+            --muted: #657983;
+            --line: #dce7e7;
+            --brand: #176b72;
+            --accent: #e76f51;
+            --error: #a93636;
+        }
+
+        * { box-sizing: border-box; }
+        body {
+            display: grid;
+            place-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 24px;
+            background: radial-gradient(circle at 15% 10%, #d8ece9 0, transparent 33%), var(--page);
+            color: var(--ink);
+            font-family: "Trebuchet MS", Arial, sans-serif;
+        }
+
+        .access-panel {
+            width: min(430px, 100%);
+            padding: 32px;
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            background: var(--panel);
+            box-shadow: 0 24px 70px rgba(25, 55, 65, 0.12);
+        }
+
+        .brand { margin: 0 0 30px; color: var(--brand); font-size: 1.2rem; font-weight: 900; }
+        .eyebrow { margin: 0 0 8px; color: var(--accent); font-size: 0.7rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; }
+        h1 { margin: 0 0 8px; font: 700 1.8rem Georgia, serif; }
+        .description { margin: 0 0 24px; color: var(--muted); font-size: 0.9rem; line-height: 1.5; }
+        label { display: block; margin-bottom: 8px; font-size: 0.82rem; font-weight: 700; }
+        input {
+            width: 100%;
+            padding: 13px 14px;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            outline-color: var(--brand);
+            background: var(--panel);
+            color: var(--ink);
+            font: 1.2rem/1.2 monospace;
+            letter-spacing: 0.18em;
+        }
+        button {
+            width: 100%;
+            margin-top: 16px;
+            padding: 13px 16px;
+            border: 0;
+            border-radius: 8px;
+            background: var(--brand);
+            color: white;
+            font: 700 0.9rem "Trebuchet MS", Arial, sans-serif;
+            cursor: pointer;
+        }
+        button:hover { background: #12565c; }
+        .error { margin: 14px 0 0; color: var(--error); font-size: 0.84rem; font-weight: 700; }
+        .back { display: inline-block; margin-top: 20px; color: var(--muted); font-size: 0.82rem; text-decoration: none; }
+        .back:hover { color: var(--brand); }
+        @media (max-width: 480px) { .access-panel { padding: 26px 22px; } }
+    </style>
+</head>
+<body>
+    <main class="access-panel">
+        <p class="brand">BitQ</p>
+        <p class="eyebrow">Restricted area</p>
+        <h1>Admin access</h1>
+        <p class="description">Enter the admin password to continue to the operations dashboard.</p>
+        <form method="post">
+            {% csrf_token %}
+            <label for="access-code">Admin password</label>
+            <input id="access-code" name="access_code" type="password" inputmode="numeric" autocomplete="current-password" minlength="6" maxlength="6" pattern="[0-9]{6}" required autofocus>
+            <button type="submit">Unlock dashboard</button>
+        </form>
+        {% if error %}<p class="error" role="alert">{{ error }}</p>{% endif %}
+        <a class="back" href="{% url 'index' %}">Back to BitQ</a>
+    </main>
+</body>
+</html>

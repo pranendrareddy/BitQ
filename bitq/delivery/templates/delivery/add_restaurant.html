@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>BitQ | Add Restaurant</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            min-height: 100vh;
+            margin: 0;
+            padding: 28px 18px;
+            background: linear-gradient(135deg, #f7f8f3, #e1f1e6);
+            color: #17211b;
+            font-family: Georgia, 'Times New Roman', serif;
+        }
+        .page { width: min(650px, 100%); margin: 0 auto; }
+        .back { color: #1e6b4c; font: 700 0.85rem Arial, sans-serif; text-decoration: none; }
+        form {
+            margin-top: 20px;
+            padding: 34px;
+            border: 1px solid #cfe2d5;
+            border-radius: 14px;
+            background: #ffffff;
+            box-shadow: 0 20px 50px rgba(29, 54, 40, 0.1);
+        }
+        h1 { margin: 0 0 8px; color: #124b35; font-size: 2.2rem; }
+        .intro { margin: 0 0 24px; color: #6d776f; font: 0.9rem/1.5 Arial, sans-serif; }
+        label { display: block; margin: 17px 0 7px; color: #315340; font: 700 0.82rem Arial, sans-serif; }
+        input { width: 100%; padding: 11px 12px; border: 1px solid #cfe2d5; border-radius: 7px; font: 0.95rem Arial, sans-serif; }
+        input:focus { outline: 2px solid #a9d0b6; border-color: #1e6b4c; }
+        .error { padding: 11px 12px; border-radius: 7px; background: #fff0ed; color: #a23d3d; font: 0.85rem Arial, sans-serif; }
+        button { width: 100%; margin-top: 24px; padding: 13px; border: 0; border-radius: 8px; background: #1e6b4c; color: white; cursor: pointer; font: 700 0.9rem Arial, sans-serif; }
+        button:hover { background: #124b35; }
+        .footer-link { margin: 16px 0 0; text-align: center; font: 0.85rem Arial, sans-serif; }
+        .footer-link a { color: #1e6b4c; font-weight: 700; }
+    </style>
+</head>
+<body>
+    <main class="page">
+    <a class="back" href="{% url 'restaurant_list' %}">← Back to restaurants</a>
+    <form method="post" action="{% url 'open_add_restaurant' %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        <h1>Add restaurant</h1>
+        <p class="intro">Create a clear, welcoming listing for BitQ customers.</p>
+        {% if error %}
+            <p>{{ error }}</p>
+        {% endif %}
+        <label>Restaurant name </label>
+        <input type="text" name="name" required>
+        <br><br>
+
+        <label for="picture">Picture URL </label>
+        <input type="url" id="picture" name="picture" placeholder="https://example.com/restaurant.jpg">
+        <br><br>
+
+        <label>Restaurant photo </label>
+        <input type="file" name="photo" accept="image/*">
+        <br><br>
+
+        <label>Cuisine </label>
+        <input type="text" name="cuisine" required>
+        <br><br>
+
+        <label>Rating</label>
+        <input type="number" name="rating" min="0" max="5" step="0.5" required>
+        <br><br>
+        <button type="submit">Add Restaurant</button>
+    </form>
+
+    <p class="footer-link"><a href="{% url 'restaurant_list' %}">View all restaurants</a></p>
+    </main>
+</body>
+</html>

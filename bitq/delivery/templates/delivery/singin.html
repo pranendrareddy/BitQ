@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign IN</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            margin: 0;
+            display: grid;
+            place-items: center;
+            padding: 24px;
+            background: linear-gradient(135deg, #fff7ed, #ffedd5);
+            color: #292524;
+            font-family: Georgia, 'Times New Roman', serif;
+        }
+
+        form {
+            width: min(100%, 420px);
+            padding: 32px;
+            border: 1px solid #fed7aa;
+            border-radius: 12px;
+            background: #ffffff;
+            box-shadow: 0 18px 45px rgba(124, 45, 18, 0.14);
+        }
+
+        h3 {
+            margin: 0 0 24px;
+            color: #9a3412;
+            font-size: 1.6rem;
+            text-align: center;
+        }
+
+        label {
+            display: block;
+            margin: 16px 0 7px;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 11px 12px;
+            border: 1px solid #d6d3d1;
+            border-radius: 6px;
+            font: inherit;
+        }
+
+        input:focus {
+            outline: 2px solid #fb923c;
+            border-color: #ea580c;
+        }
+
+        button {
+            width: 100%;
+            margin-top: 18px;
+            padding: 12px;
+            border: 0;
+            border-radius: 6px;
+            background: #ea580c;
+            color: #ffffff;
+            cursor: pointer;
+            font: bold 1rem inherit;
+        }
+
+        button:hover {
+            background: #c2410c;
+        }
+    </style>
+</head>
+<body>
+    <h3>SIGN IN below:</h3>
+
+    <form action="{% url 'signin' %}" method="post">
+        {% csrf_token %}
+        <label>Username </label>
+        <input type="text" name="username">
+        <br><br>
+        <label>Password </label>
+        <input type="password" name="password">
+        <br><br>
+
+        <br><br>
+        <button type="submit">SIGN IN</button>
+    </form>
+</body>
+</html>

@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BitQ | Admin Dashboard</title>
+    <style>
+        :root {
+            --ink: #17211b;
+            --muted: #6d776f;
+            --paper: #f7f8f3;
+            --panel: #ffffff;
+            --line: #e4e9df;
+            --green: #1e6b4c;
+            --green-dark: #124b35;
+            --mint: #dff0e6;
+            --orange-soft: #fff0e5;
+            --red: #b84c4c;
+            --shadow: 0 18px 45px rgba(29, 54, 40, 0.08);
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: var(--paper);
+            color: var(--ink);
+            font-family: Georgia, 'Times New Roman', serif;
+        }
+
+        .shell {
+            display: grid;
+            grid-template-columns: 245px minmax(0, 1fr);
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            padding: 30px 22px;
+            background: var(--green-dark);
+            color: #f6fbf7;
+        }
+
+        .brand {
+            margin: 0 0 42px;
+            color: #f5c786;
+            font-size: 2rem;
+            letter-spacing: 0.08em;
+        }
+
+        .eyebrow {
+            margin: 0 0 10px;
+            color: #a9c7b5;
+            font: 700 0.68rem/1.2 Arial, sans-serif;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+        }
+
+        .nav {
+            display: grid;
+            gap: 8px;
+        }
+
+        .nav a {
+            padding: 12px 14px;
+            border-radius: 8px;
+            color: #dcebe0;
+            font: 600 0.9rem Arial, sans-serif;
+            text-decoration: none;
+        }
+
+        .nav a:hover,
+        .nav a.active {
+            background: rgba(255, 255, 255, 0.13);
+            color: #ffffff;
+        }
+
+        .sidebar-note {
+            margin-top: auto;
+            padding: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            color: #c9ddd0;
+            font: 0.78rem/1.5 Arial, sans-serif;
+        }
+
+        .main {
+            width: min(1420px, 100%);
+            padding: 34px clamp(22px, 4vw, 62px) 52px;
+        }
+
+        .topbar {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 20px;
+            margin-bottom: 34px;
+        }
+
+        h1, h2, p { margin-top: 0; }
+
+        h1 {
+            margin-bottom: 8px;
+            font-size: clamp(2rem, 3vw, 3rem);
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .welcome {
+            margin-bottom: 0;
+            color: var(--muted);
+            font: 0.95rem/1.5 Arial, sans-serif;
+        }
+
+        .status {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 9px 12px;
+            border: 1px solid #c8e1d1;
+            border-radius: 999px;
+            background: #eef8f1;
+            color: var(--green-dark);
+            font: 700 0.75rem Arial, sans-serif;
+            white-space: nowrap;
+        }
+
+        .status::before {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #45a86e;
+            content: '';
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+
+        .stat {
+            position: relative;
+            overflow: hidden;
+            min-height: 132px;
+            padding: 22px;
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            background: var(--panel);
+            box-shadow: var(--shadow);
+        }
+
+        .stat::after {
+            position: absolute;
+            right: -24px;
+            bottom: -34px;
+            width: 100px;
+            height: 100px;
+            border: 18px solid var(--mint);
+            border-radius: 50%;
+            content: '';
+        }
+
+        .stat:nth-child(2)::after { border-color: var(--orange-soft); }
+        .stat:nth-child(3)::after { border-color: #e8e9f7; }
+        .stat:nth-child(4)::after { border-color: #dcefeb; }
+
+        .stat-label {
+            color: var(--muted);
+            font: 700 0.72rem Arial, sans-serif;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .stat-value {
+            display: block;
+            margin-top: 16px;
+            font-size: 2.25rem;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1.45fr) minmax(280px, 0.8fr);
+            gap: 22px;
+        }
+
+        .panel {
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            background: var(--panel);
+            box-shadow: var(--shadow);
+        }
+
+        .panel-head {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 23px 24px 17px;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .panel-head h2 {
+            margin-bottom: 5px;
+            font-size: 1.25rem;
+        }
+
+        .panel-head p {
+            margin-bottom: 0;
+            color: var(--muted);
+            font: 0.8rem Arial, sans-serif;
+        }
+
+        .text-link,
+        .row-link {
+            color: var(--green);
+            font: 700 0.8rem Arial, sans-serif;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .restaurant-list { padding: 4px 24px 10px; }
+
+        .restaurant-row {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto auto auto;
+            align-items: center;
+            gap: 18px;
+            padding: 17px 0;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .restaurant-row:last-child { border-bottom: 0; }
+
+        .restaurant-name {
+            margin-bottom: 5px;
+            font-size: 1.05rem;
+        }
+
+        .restaurant-meta {
+            margin: 0;
+            color: var(--muted);
+            font: 0.78rem Arial, sans-serif;
+        }
+
+        .rating {
+            padding: 6px 9px;
+            border-radius: 6px;
+            background: #fff5dd;
+            color: #94671d;
+            font: 700 0.78rem Arial, sans-serif;
+        }
+
+        .quick-actions {
+            display: grid;
+            gap: 10px;
+            padding: 22px 24px 24px;
+        }
+
+        .action {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 14px 15px;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            color: var(--ink);
+            font: 700 0.88rem Arial, sans-serif;
+            text-decoration: none;
+            transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+        }
+
+        .action:hover {
+            transform: translateY(-2px);
+            border-color: #a8cdb5;
+            background: #f4faf5;
+        }
+
+        .action.primary {
+            border-color: var(--green);
+            background: var(--green);
+            color: white;
+        }
+
+        .action.primary:hover { background: var(--green-dark); }
+        .action.danger { color: var(--red); }
+
+        .recent-orders { grid-column: 1 / -1; }
+        .order-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 18px; padding: 16px 0; border-bottom: 1px solid var(--line); }
+        .order-row:last-child { border-bottom: 0; }
+        .order-meta { margin: 5px 0 0; color: var(--muted); font: 0.78rem Arial, sans-serif; }
+        .order-status-form { display: flex; align-items: center; gap: 8px; }
+        .order-status-form select { max-width: 170px; padding: 9px; border: 1px solid var(--line); border-radius: 6px; background: var(--panel); color: var(--ink); }
+        .order-status-form button { padding: 9px 11px; border: 0; border-radius: 6px; background: var(--green); color: white; font-weight: 700; cursor: pointer; }
+
+        .feedback {
+            grid-column: 1 / -1;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            align-items: center;
+            gap: 24px;
+            padding: 24px;
+            background: #fffaf3;
+            border-color: #f2dfc3;
+        }
+
+        .feedback h2 { margin-bottom: 6px; }
+
+        .feedback p {
+            max-width: 620px;
+            margin-bottom: 0;
+            color: var(--muted);
+            font: 0.86rem/1.5 Arial, sans-serif;
+        }
+
+        .coming-soon {
+            padding: 10px 13px;
+            border-radius: 7px;
+            background: #f5e6c9;
+            color: #86622b;
+            font: 700 0.72rem Arial, sans-serif;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        @media (max-width: 900px) {
+            .shell { grid-template-columns: 1fr; }
+            .sidebar { padding: 18px 22px; }
+            .brand { margin-bottom: 18px; }
+            .nav { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+            .sidebar-note { display: none; }
+            .content-grid { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 620px) {
+            .main { padding: 26px 16px 36px; }
+            .topbar { display: block; }
+            .status { margin-top: 18px; }
+            .stats { grid-template-columns: 1fr; }
+            .nav { grid-template-columns: repeat(2, 1fr); }
+            .restaurant-row { grid-template-columns: 1fr auto; gap: 8px 14px; }
+            .restaurant-row .rating { grid-column: 2; grid-row: 1; }
+            .restaurant-row .row-link { grid-column: 1 / -1; }
+            .feedback { grid-template-columns: 1fr; }
+            .order-row { grid-template-columns: 1fr; }
+            .order-status-form { justify-content: flex-start; }
+        }
+    </style>
+</head>
+<body>
+    <div class="shell">
+        <aside class="sidebar">
+            <div>
+                <p class="eyebrow">Operations console</p>
+                <h1 class="brand">BitQ</h1>
+                <nav class="nav" aria-label="Admin navigation">
+                    <a class="active" href="{% url 'dashboard' %}">Dashboard</a>
+                    <a href="{% url 'restaurant_list' %}">Restaurants</a>
+                    <a href="{% url 'open_add_restaurant' %}">Add restaurant</a>
+                    <a href="{% url 'admin_orders' %}">Orders</a>
+                    <a href="#feedback">Feedback</a>
+                    <a href="{% url 'logout' %}">Sign out</a>
+                </nav>
+            </div>
+            <div class="sidebar-note">
+                <strong>Admin workspace</strong><br>
+                Keep the menu fresh, the listings accurate, and the customer experience moving.
+            </div>
+        </aside>
+
+        <main class="main" id="dashboard">
+            <header class="topbar">
+                <div>
+                    <p class="eyebrow">Tuesday, September 17</p>
+                    <h1>Good to see you, Admin.</h1>
+                    <p class="welcome">Here is what is happening across your BitQ marketplace.</p>
+                </div>
+                <div class="status">System operational</div>
+            </header>
+
+            <section class="stats" aria-label="Dashboard summary">
+                <article class="stat">
+                    <span class="stat-label">Restaurants</span>
+                    <strong class="stat-value">{{ restaurant_count }}</strong>
+                </article>
+                <article class="stat">
+                    <span class="stat-label">Registered customers</span>
+                    <strong class="stat-value">{{ customer_count }}</strong>
+                </article>
+                <article class="stat">
+                    <span class="stat-label">Feedback inbox</span>
+                    <strong class="stat-value">{{ feedback_count }}</strong>
+                </article>
+                <article class="stat">
+                    <span class="stat-label">Customer orders</span>
+                    <strong class="stat-value">{{ order_count }}</strong>
+                </article>
+            </section>
+
+            <div class="content-grid">
+                <section class="panel">
+                    <div class="panel-head">
+                        <div>
+                            <h2>Recent restaurants</h2>
+                            <p>Your latest listings at a glance.</p>
+                        </div>
+                        <a class="text-link" href="{% url 'restaurant_list' %}">View all</a>
+                    </div>
+                    <div class="restaurant-list">
+                        {% for restaurant in recent_restaurants %}
+                            <div class="restaurant-row">
+                                <div>
+                                    <div class="restaurant-name">{{ restaurant.name }}</div>
+                                    <p class="restaurant-meta">{{ restaurant.cuisine }}</p>
+                                </div>
+                                <span class="rating">{{ restaurant.rating }} / 5</span>
+                                <a class="row-link" href="{% url 'update_restaurant' restaurant.id %}">Edit</a>
+                                <a class="row-link" href="{% url 'update_menu' restaurant.id %}">Menu</a>
+                            </div>
+                        {% empty %}
+                            <div class="restaurant-row">
+                                <div>
+                                    <div class="restaurant-name">No restaurants yet</div>
+                                    <p class="restaurant-meta">Add your first listing to get started.</p>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </section>
+
+                <section class="panel">
+                    <div class="panel-head">
+                        <div>
+                            <h2>Quick actions</h2>
+                            <p>Common admin tasks.</p>
+                        </div>
+                    </div>
+                    <div class="quick-actions">
+                        <a class="action primary" href="{% url 'open_add_restaurant' %}">Add restaurant <span>+</span></a>
+                        <a class="action" href="{% url 'restaurant_list' %}">Update restaurant <span>-></span></a>
+                        <a class="action danger" href="{% url 'restaurant_list' %}">Delete restaurant <span>-></span></a>
+                        <a class="action" href="{% url 'open_show_restaurant' %}">Browse all listings <span>-></span></a>
+                    </div>
+                </section>
+
+                <section class="panel recent-orders" id="orders">
+                    <div class="panel-head">
+                        <div>
+                            <h2>Recent orders</h2>
+                            <p>Update order progress for customers.</p>
+                        </div>
+                        <a class="text-link" href="{% url 'admin_orders' %}">Manage all orders</a>
+                    </div>
+                    <div class="restaurant-list">
+                        {% for order in recent_orders %}
+                        <div class="order-row">
+                            <div>
+                                <strong>Order #{{ order.id }} · {{ order.customer.username }} · ₹{{ order.total_price|floatformat:2 }}</strong>
+                                <p class="order-meta">{% for line in order.lines.all %}{{ line.item.name }} × {{ line.quantity }}{% if not forloop.last %} · {% endif %}{% empty %}No item details{% endfor %}</p>
+                            </div>
+                            <form class="order-status-form" method="post" action="{% url 'update_order_status' order.id %}">
+                                {% csrf_token %}<input type="hidden" name="next" value="dashboard">
+                                <select name="status" aria-label="Status for order {{ order.id }}">
+                                    {% for value, label in status_choices %}<option value="{{ value }}" {% if order.status == value %}selected{% endif %}>{{ label }}</option>{% endfor %}
+                                </select>
+                                <button type="submit">Save</button>
+                            </form>
+                        </div>
+                        {% empty %}<p class="order-meta">No customer orders yet.</p>{% endfor %}
+                    </div>
+                </section>
+
+                <section class="panel feedback" id="feedback">
+                    <div>
+                        <h2>Customer feedback</h2>
+                        {% for feedback in recent_feedback %}
+                            <p><strong>{{ feedback.rating }}/5</strong> from {{ feedback.customer.username }}: {{ feedback.message }}</p>
+                        {% empty %}
+                            <p>No customer feedback yet. It will appear here after customers submit a rating and comment.</p>
+                        {% endfor %}
+                    </div>
+                    <span class="coming-soon">{{ feedback_count }} received</span>
+                </section>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

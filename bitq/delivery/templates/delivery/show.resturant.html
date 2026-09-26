@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BitQ | Manage Restaurants</title>
+    <style>
+        :root {
+            --ink: #172235;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: var(--paper);
+            color: var(--ink);
+            font-family: Arial, sans-serif;
+        }
+
+        .topbar {
+            height: 58px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+            padding: 0 max(24px, calc((100% - 1100px) / 2));
+            border-bottom: 1px solid var(--line);
+            background: var(--panel);
+        }
+        .brand {
+            color: var(--orange);
+            font-size: 1.18rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            white-space: nowrap;
+            }
+    .brand::before { content: '\01F354 '; }
+
+    .nav {
+            display: flex;
+            align-items: center;
+            gap: 26px;
+        }
+        .nav a {
+            color: var(--ink);
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-decoration: none;
+            white-space: nowrap;
+            }
+    .nav a:hover { color: var(--orange); }
+    .nav .logout { color: #bd6a4e; }
+
+    .page {
+            width: min(1100px, calc(100% - 40px));
+            margin: 42px auto 64px;
+        }
+        .page-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 24px;
+            margin-bottom: 30px;
+        }
+        .header-copy {
+            flex: 1;
+        }
+        h1 {
+            margin: 0 0 8px;
+            font-size: 2rem;
+            letter-spacing: -0.04em;
+        }
+
+        .subtitle {
+            margin: 0;
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            border: 1px solid var(--line);
+            border-radius: 999px;
+            background: #fff;
+            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+            min-width: min(100%, 300px);
+        }
+
+        .search-bar input {
+            flex: 1;
+            border: none;
+            outline: none;
+            background: transparent;
+            color: var(--ink);
+            font: 0.85rem Arial, sans-serif;
+        }
+
+        .search-bar button {
+            border: none;
+            border-radius: 999px;
+            background: var(--orange);
+            color: #fff;
+            padding: 8px 12px;
+            font: 700 0.75rem Arial, sans-serif;
+            cursor: pointer;
+        }
+        .add-button,
+        .action-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 7px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .add-button {
+            gap: 7px;
+            padding: 12px 17px;
+            background: var(--orange);
+            color: #ffffff;
+            box-shadow: 0 7px 16px rgba(255, 99, 56, 0.2);
+        }
+    .add-button:hover { background: #e9512a; }
+
+    .table-wrap {
+            overflow: hidden;
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            background: var(--panel);
+            box-shadow: var(--shadow);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+
+        th {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--line);
+            background: #f3f8fb;
+            color: #536275;
+            font-size: 0.66rem;
+            letter-spacing: 0.06em;
+            text-align: left;
+            text-transform: uppercase;
+        }
+        td {
+            height: 82px;
+            padding: 12px 16px;
+            border-bottom: 1px solid #edf1f4;
+            color: #475569;
+            font-size: 0.8rem;
+            vertical-align: middle;
+        }
+
+        tbody tr:last-child td { border-bottom: 0; }
+    tbody tr:hover { background: #fcfdfd; }
+
+    .restaurant-cell {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .restaurant-photo {
+        width: 42px;
+        height: 42px;
+        flex: 0 0 42px;
+        border-radius: 6px;
+        background: #eef2f5;
+        object-fit: cover;
+    }
+
+    .restaurant-photo.placeholder { opacity: 0.55; }
+    .restaurant-name {
+        display: block;
+        margin-bottom: 4px;
+        color: var(--ink);
+        font-size: 0.85rem;
+        font-weight: 700;
+    }
+
+    .restaurant-id {
+        color: var(--muted);
+        font-size: 0.68rem;
+    }
+
+    .cuisine { color: var(--orange); font-weight: 700; }
+
+    .location {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 7px 10px;
+        border-radius: 999px;
+        background: var(--navy);
+        color: #ffffff;
+        font-size: 0.68rem;
+        font-weight: 700;
+    }
+
+    .location::before { content: '\2022'; color: #ff6b4a; }
+
+    .rating { color: #536275; font-weight: 700; }
+    .rating::before { content: '\2605'; margin-right: 5px; color: var(--yellow); }
+
+    .operations {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .action-link { padding: 8px 10px; }
+    .action-link.menu { background: var(--navy); color: #ffffff; }
+    .action-link.edit { border: 1px solid var(--line); color: #d87959; }
+    .action-link.delete { background: var(--orange); color: #ffffff; }
+    .action-link:hover { filter: brightness(0.96); }
+
+    .empty { padding: 36px; color: var(--muted); text-align: center; }
+        @media (max-width: 760px) {
+            .topbar { height: auto; padding: 16px 20px; align-items: flex-start; }
+            .nav { flex-wrap: wrap; justify-content: flex-end; gap: 12px 18px; }
+            .page { width: min(100% - 24px, 600px); margin-top: 28px; }
+            .page-header { display: block; }
+            .add-button { margin-top: 18px; }
+            .table-wrap { overflow-x: auto; }
+            table { min-width: 720px; }
+        }
+    </style>
+    </head>
+<body>
+    <header class="topbar">
+        <a class="brand" href="{% url 'dashboard' %}">BitQ</a>
+        <nav class="nav" aria-label="Restaurant management">
+            {% if is_admin %}
+                <a href="{% url 'restaurant_list' %}">Manage Restaurants</a>
+                <a href="{% url 'open_add_restaurant' %}">+ Add Restaurant</a>
+            {% endif %}
+            <a class="logout" href="{% url 'logout' %}">Logout</a>
+        </nav>
+    </header>
+
+    <main class="page">
+        <div class="page-header">
+            <div class="header-copy">
+                <h1>Manage Restaurants <span aria-hidden="true">&#128221;</span></h1>
+                <p class="subtitle">View, edit, manage menus, or remove restaurants from the BitQ platform.</p>
+            </div>
+            <form class="search-bar" method="get" action="{% url 'restaurant_list' %}">
+                <input type="text" name="q" value="{{ search_query }}" placeholder="Search by restaurant or cuisine" aria-label="Search restaurants">
+                <button type="submit">Search</button>
+            </form>
+            {% if is_admin %}
+                <a class="add-button" href="{% url 'open_add_restaurant' %}">+ Add New Restaurant</a>
+            {% endif %}
+        </div>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 25%;">Restaurant</th>
+                        <th style="width: 17%;">Cuisine</th>
+                        <th style="width: 18%;">Location</th>
+                        <th style="width: 12%;">Rating</th>
+                        <th style="width: 28%;">Operations</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for restaurant in restaurants %}
+                        <tr>
+                            <td>
+                                <div class="restaurant-cell">
+                                    {% if restaurant.photo %}
+                                        <img class="restaurant-photo" src="{{ restaurant.photo.url }}" alt="{{ restaurant.name }}">
+                                    {% elif restaurant.picture %}
+                                        <img class="restaurant-photo" src="{{ restaurant.picture }}" alt="{{ restaurant.name }}">
+                                    {% else %}
+                                        <span class="restaurant-photo placeholder" aria-hidden="true"></span>
+                                    {% endif %}
+                                    <div>
+                                        <span class="restaurant-name">{{ restaurant.name }}</span>
+                                        <span class="restaurant-id">ID: #{{ restaurant.id }}</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="cuisine">{{ restaurant.cuisine }}</td>
+                            <td><span class="location">{{ restaurant.city }}</span></td>
+                            <td class="rating">{{ restaurant.rating }}</td>
+                            <td>
+                                <div class="operations">
+                                    <a class="action-link menu" href="{% url 'update_menu' restaurant.id %}">&#9664; Menu</a>
+                                    {% if is_admin %}
+                                        <a class="action-link edit" href="{% url 'update_restaurant' restaurant.id %}">&#9998; Edit</a>
+                                        <a class="action-link delete" href="{% url 'delete_restaurant' restaurant.id %}">&#128465; Delete</a>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr><td class="empty" colspan="5">No restaurants found.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </main>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EatClub Restaurants</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #fff7ed, #ffedd5);
+            color: #1f2937;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 24px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .header h1 {
+            margin: 0;
+            color: #9a3412;
+            font-size: 2.2rem;
+        }
+
+        .add-btn {
+            display: inline-block;
+            background: #ea580c;
+            color: white;
+            text-decoration: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: 0.2s ease;
+        }
+
+        .add-btn:hover {
+            background: #c2410c;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0 10px 30px rgba(124, 45, 18, 0.09);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 14px 12px;
+            border-bottom: 1px solid #f3d9c7;
+            text-align: left;
+            vertical-align: middle;
+        }
+
+        th {
+            background: #fff3e7;
+            color: #7c2d12;
+            font-weight: 700;
+        }
+
+        img {
+            width: 180px;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 10px;
+            border: 2px solid #fed7aa;
+        }
+
+        .action-cell {
+            white-space: nowrap;
+        }
+
+        .action-link {
+            display: inline-block;
+            margin: 4px 6px 4px 0;
+            padding: 8px 12px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .update {
+            background: #e0f2fe;
+            color: #075985;
+        }
+
+        .delete {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .menu {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .empty {
+            padding: 30px;
+            text-align: center;
+            color: #7c2d12;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 16px;
+            }
+
+            table, thead, tbody, th, td, tr {
+                display: block;
+            }
+
+            thead {
+                display: none;
+            }
+
+            tr {
+                margin-bottom: 16px;
+                background: white;
+                border-radius: 12px;
+                box-shadow: 0 8px 20px rgba(124, 45, 18, 0.08);
+                padding: 12px;
+            }
+
+            td {
+                border: none;
+                padding: 8px 0;
+            }
+
+            td::before {
+                content: attr(data-label);
+                display: block;
+                font-weight: 700;
+                color: #7c2d12;
+                margin-bottom: 6px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>EatClub Restaurants</h1>
+            {% if is_admin %}
+                <a class="add-btn" href="{% url 'open_add_restaurant' %}">Add Restaurant</a>
+            {% endif %}
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Restaurant Name</th>
+                    <th>Picture</th>
+                    <th>Restaurant City</th>
+                    <th>Rating</th>
+                    <th>Operating Hours</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in restaurants %}
+                <tr>
+                    <td data-label="Restaurant Name">{{ r.restaurant_name }}</td>
+                    <td data-label="Picture">
+                        {% if r.photo %}
+                            <img src="{{ r.photo.url }}" alt="{{ r.restaurant_name }}">
+                        {% elif r.picture %}
+                            <img src="{{ r.picture }}" alt="{{ r.restaurant_name }}">
+                        {% else %}
+                            No picture
+                        {% endif %}
+                    </td>
+                    <td data-label="Restaurant City">{{ r.city }}</td>
+                    <td data-label="Rating">{{ r.rating }}</td>
+                    <td data-label="Operating Hours">{{ r.operating_hours }}</td>
+                    <td class="action-cell" data-label="Actions">
+                        {% if is_admin %}
+                            <a class="action-link update" href="{% url 'update_restaurant' r.id %}">Update Restaurant Info</a>
+                            <a class="action-link delete" href="{% url 'delete_restaurant' r.id %}">Delete Restaurant</a>
+                        {% endif %}
+                        <a class="action-link menu" href="{% url 'update_menu' r.id %}">Update Menu</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="empty">No restaurants found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BitQ | Manage orders</title>
+    <style>
+        :root { --page: #f2f6f4; --panel: #fff; --ink: #1d3029; --muted: #687970; --line: #dce7df; --brand: #1d6e4d; --accent: #d66b45; }
+        * { box-sizing: border-box; }
+        body { margin: 0; min-height: 100vh; background: var(--page); color: var(--ink); font-family: Arial, sans-serif; }
+        header { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; padding: 16px max(24px, calc((100% - 1180px) / 2)); background: var(--panel); border-bottom: 1px solid var(--line); }
+        header strong { color: var(--brand); font-size: 1.1rem; }
+        nav { display: flex; gap: 9px; flex-wrap: wrap; }
+        nav a { padding: 9px 12px; border: 1px solid var(--line); border-radius: 7px; color: var(--ink); font-size: 0.8rem; font-weight: 700; text-decoration: none; }
+        main { width: min(1180px, calc(100% - 40px)); margin: 34px auto 60px; }
+        h1 { margin: 0 0 8px; font: 700 2rem Georgia, serif; }
+        .muted { color: var(--muted); }
+        .order-list { display: grid; gap: 12px; margin-top: 22px; }
+        .order { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 18px; padding: 18px; border: 1px solid var(--line); border-radius: 9px; background: var(--panel); }
+        .order-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+        .order-heading strong { font-size: 0.95rem; }
+        .order-heading span, .order-meta { color: var(--muted); font-size: 0.8rem; }
+        .order-items { margin: 12px 0 0; color: var(--muted); font-size: 0.82rem; line-height: 1.6; }
+        .order-total { display: block; margin-top: 8px; color: var(--ink); font-weight: 800; }
+        .status-form { display: flex; align-items: end; gap: 8px; }
+        select { min-width: 155px; padding: 10px; border: 1px solid var(--line); border-radius: 6px; background: var(--panel); color: var(--ink); }
+        button { padding: 10px 13px; border: 0; border-radius: 6px; background: var(--brand); color: #fff; font-weight: 700; cursor: pointer; }
+        .notice { margin: 14px 0 0; color: var(--brand); font-weight: 700; font-size: 0.84rem; }
+        .empty { padding: 28px; border: 1px dashed var(--line); border-radius: 8px; color: var(--muted); text-align: center; }
+        @media (max-width: 680px) { main { width: calc(100% - 28px); } .order { grid-template-columns: 1fr; } .status-form { align-items: center; } .status-form select { flex: 1; min-width: 0; } }
+    </style>
+</head>
+<body>
+    <header>
+        <strong>BitQ Admin</strong>
+        <nav aria-label="Admin navigation">
+            <a href="{% url 'dashboard' %}">Dashboard</a>
+            <a href="{% url 'restaurant_list' %}">Restaurants</a>
+            <a href="{% url 'logout' %}">Sign out</a>
+        </nav>
+    </header>
+    <main>
+        <h1>Order management</h1>
+        <p class="muted">Update fulfillment status for customer orders.</p>
+        {% if messages %}{% for message in messages %}<p class="notice">{{ message }}</p>{% endfor %}{% endif %}
+        <div class="order-list">
+            {% for order in orders %}
+            <article class="order">
+                <div>
+                    <div class="order-heading"><strong>Order #{{ order.id }} · {{ order.customer.username }}</strong><span>{{ order.created_at|date:'M d, Y · H:i' }}</span></div>
+                    <p class="order-items">{% for line in order.lines.all %}{{ line.item.name }} × {{ line.quantity }}{% if not forloop.last %} · {% endif %}{% empty %}No item details{% endfor %}</p>
+                    <span class="order-total">₹{{ order.total_price|floatformat:2 }} · {{ order.get_payment_method_display|default:order.payment_method }}</span>
+                </div>
+                <form class="status-form" method="post" action="{% url 'update_order_status' order.id %}">
+                    {% csrf_token %}<input type="hidden" name="next" value="admin_orders">
+                    <label class="muted" for="status-{{ order.id }}">Status<br>
+                        <select id="status-{{ order.id }}" name="status">
+                            {% for value, label in status_choices %}<option value="{{ value }}" {% if order.status == value %}selected{% endif %}>{{ label }}</option>{% endfor %}
+                        </select>
+                    </label>
+                    <button type="submit">Save</button>
+                </form>
+            </article>
+            {% empty %}<p class="empty">No orders have been placed yet.</p>{% endfor %}
+        </div>
+    </main>
+</body>
+</html>

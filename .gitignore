@@ -1,0 +1,11 @@
+myenv/
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+.env
+.env.*
+!.env.example
+bitq/db.sqlite3
+bitq/media/
+bitq/staticfiles/

@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>BitQ | Menu</title>
+	<style>
+		:root {
+			--page-bg: #eff5f5;
+			--panel: #ffffff;
+			--line: #dce7e7;
+			--text: #192b35;
+			--muted: #657983;
+			--brand: #176b72;
+			--brand-dark: #124f59;
+			--accent: #e76f51;
+			--price: #bd792d;
+		}
+
+		body.dark {
+			--page-bg: #16282f;
+			--panel: #20353d;
+			--line: #3a5059;
+			--text: #edf4f3;
+			--muted: #b0c2c5;
+			--brand: #81cbd0;
+			--brand-dark: #9cdde0;
+			--price: #e8bc75;
+		}
+
+		* { box-sizing: border-box; }
+
+		body {
+			margin: 0;
+			padding: 32px 18px 48px;
+			background: var(--page-bg);
+			color: var(--text);
+			font-family: Arial, sans-serif;
+		}
+
+		main { width: min(1200px, 100%); margin: 0 auto; }
+
+		.topbar {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: 16px;
+			flex-wrap: wrap;
+			margin-bottom: 22px;
+		}
+
+		h1 { margin: 0; color: var(--brand-dark); font-size: clamp(2rem, 4vw, 3rem); }
+		.subtitle { color: var(--muted); margin: 8px 0 0; }
+
+		.header-actions {
+			display: flex;
+			align-items: center;
+			gap: 12px;
+			flex-wrap: wrap;
+		}
+
+		.cart-link,
+		.back-link,
+		.add-button,
+		.theme-button {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			padding: 11px 16px;
+			border-radius: 10px;
+			font-weight: 700;
+			text-decoration: none;
+			transition: 0.2s ease;
+		}
+
+		.cart-link, .back-link {
+			background: var(--panel);
+			color: var(--brand-dark);
+			border: 1px solid var(--line);
+		}
+
+		.cart-link:hover, .back-link:hover { transform: translateY(-1px); }
+
+		.add-button {
+			background: var(--accent);
+			color: white;
+		}
+		.add-button:hover { background: #c6533c; }
+		.theme-button { cursor: pointer; color: var(--text); }
+
+		.table-wrap { overflow-x: auto; }
+
+		table {
+			width: 100%;
+			border-collapse: collapse;
+			background: var(--panel);
+			color: var(--text);
+			box-shadow: 0 12px 30px rgba(18, 79, 61, 0.08);
+			border-radius: 16px;
+			overflow: hidden;
+		}
+
+		th,
+		td {
+			padding: 16px 18px;
+			border: 1px solid var(--line);
+			text-align: left;
+			vertical-align: middle;
+		}
+
+		th {
+			background: var(--brand);
+			color: #ffffff;
+			font: 700 0.82rem Arial, sans-serif;
+			letter-spacing: 0.04em;
+			text-transform: uppercase;
+		}
+
+		td { font: 0.95rem Arial, sans-serif; }
+
+		td img {
+			display: block;
+			width: 106px;
+			height: 78px;
+			object-fit: cover;
+			border-radius: 10px;
+			border: 2px solid rgba(29, 110, 77, 0.14);
+		}
+
+		.badge {
+			display: inline-block;
+			padding: 5px 10px;
+			border-radius: 999px;
+			font-size: 0.7rem;
+			font-weight: 700;
+			background: #e9f7f0;
+			color: var(--brand-dark);
+		}
+
+		.empty {
+			padding: 26px;
+			color: var(--muted);
+			text-align: center;
+		}
+		.cart-count { display: inline-grid; place-items: center; min-width: 22px; height: 22px; margin-left: 6px; padding: 0 5px; border-radius: 999px; background: var(--brand); color: #fff; font-size: 0.72rem; }
+		.menu-tools { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; margin-bottom: 18px; }
+		.menu-search { width: min(360px, 100%); padding: 12px 14px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); color: var(--text); font: inherit; }
+		.veg-filter { display: inline-flex; align-items: center; gap: 8px; color: var(--muted); font-size: 0.88rem; }
+		.veg-filter input { accent-color: var(--brand); }
+		.menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(245px, 100%), 1fr)); gap: 18px; }
+		.menu-card { overflow: hidden; border: 1px solid var(--line); border-radius: 12px; background: var(--panel); }
+		.menu-image { display: block; width: 100%; aspect-ratio: 16 / 10; object-fit: cover; background: #d9e7e7; }
+		.menu-copy { padding: 15px; }
+		.menu-title-row { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+		.menu-title-row h2 { margin: 0; font-size: 1rem; }
+		.menu-price { color: var(--price); font-weight: 800; white-space: nowrap; }
+		.menu-description { min-height: 40px; margin: 9px 0 14px; color: var(--muted); font-size: 0.84rem; line-height: 1.5; }
+		.menu-meta { display: flex; align-items: center; justify-content: space-between; gap: 9px; }
+		.badge { background: #eaf5f1; color: #28745e; }
+		body.dark .badge { background: #294b49; color: #9bd9c0; }
+		.menu-card form { margin: 0; }
+		.add-button { padding: 9px 12px; border: 0; border-radius: 7px; font-weight: 700; cursor: pointer; }
+		@media (max-width: 520px) { body { padding: 22px 14px 36px; } .menu-search { width: 100%; } }
+	</style>
+</head>
+<body>
+	<main>
+		<div class="topbar">
+			<div>
+				<h1>{{ restaurant.name }}</h1>
+				<p class="subtitle">Fresh favorites for {{ username }}</p>
+			</div>
+			<div class="header-actions">
+				<button class="theme-button" id="theme-toggle" type="button" aria-pressed="false">Dark mode</button>
+				<a class="back-link" href="{% url 'customer_home' username %}">Back to restaurants</a>
+				<a class="cart-link" href="{% url 'show_cart' username %}">Go to cart<span class="cart-count">{{ cart_count }}</span></a>
+			</div>
+		</div>
+		<div class="menu-tools">
+			<input class="menu-search" id="menu-search" type="search" placeholder="Search this menu" aria-label="Search menu">
+			<label class="veg-filter"><input id="veg-only" type="checkbox"> Vegetarian only</label>
+		</div>
+		<div class="menu-grid" id="menu-grid">
+			{% for item in itemlist %}
+			<article class="menu-card" data-name="{{ item.name|lower }} {{ item.description|lower }}" data-vegetarian="{{ item.vegeterian|yesno:'true,false' }}">
+				{% if item.picture %}<img class="menu-image" src="{{ item.picture }}" alt="{{ item.name }}" loading="lazy">{% endif %}
+				<div class="menu-copy">
+					<div class="menu-title-row"><h2>{{ item.name }}</h2><span class="menu-price">₹{{ item.price|floatformat:2 }}</span></div>
+					<p class="menu-description">{{ item.description }}</p>
+					<div class="menu-meta">
+						<span class="badge">{% if item.vegeterian %}● Veg{% else %}● Non-veg{% endif %}</span>
+						<form method="post" action="{% url 'add_to_cart' item.id username %}">{% csrf_token %}<button class="add-button" type="submit">Add to cart</button></form>
+					</div>
+				</div>
+			</article>
+			{% empty %}<p class="empty">No menu items are available yet.</p>{% endfor %}
+		</div>
+	</main>
+	<script>
+		const themeToggle = document.getElementById('theme-toggle');
+		const applyTheme = (theme) => {
+			document.body.classList.toggle('dark', theme === 'dark');
+			themeToggle.textContent = theme === 'dark' ? 'Light mode' : 'Dark mode';
+			themeToggle.setAttribute('aria-pressed', String(theme === 'dark'));
+		};
+		applyTheme(localStorage.getItem('bitq-theme') || 'light');
+		themeToggle.addEventListener('click', () => {
+			const theme = document.body.classList.contains('dark') ? 'light' : 'dark';
+			localStorage.setItem('bitq-theme', theme);
+			applyTheme(theme);
+		});
+		const filterMenu = () => {
+			const query = document.getElementById('menu-search').value.trim().toLowerCase();
+			const vegetarianOnly = document.getElementById('veg-only').checked;
+			document.querySelectorAll('.menu-card').forEach((card) => {
+				card.hidden = !card.dataset.name.includes(query) || (vegetarianOnly && card.dataset.vegetarian !== 'true');
+			});
+		};
+		document.getElementById('menu-search').addEventListener('input', filterMenu);
+		document.getElementById('veg-only').addEventListener('change', filterMenu);
+	</script>
+</body>
+</html>

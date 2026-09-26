@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>BitQ | Restaurants</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { margin: 0; padding: 30px 18px; background: #f7f8f3; color: #17211b; font-family: Georgia, 'Times New Roman', serif; }
+        main { width: min(1000px, 100%); margin: 0 auto; }
+        header { display: flex; align-items: end; justify-content: space-between; gap: 16px; margin-bottom: 28px; }
+        h1 { margin: 0 0 6px; color: #124b35; font-size: 2.4rem; }
+        header p { margin: 0; color: #6d776f; font: 0.9rem Arial, sans-serif; }
+        header a, .card a { display: inline-block; padding: 11px 15px; border-radius: 8px; background: #1e6b4c; color: white; font: 700 0.85rem Arial, sans-serif; text-decoration: none; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 16px; }
+        .card { overflow: hidden; border: 1px solid #e4e9df; border-radius: 12px; background: white; box-shadow: 0 12px 30px rgba(29, 54, 40, 0.07); }
+        .card img { width: 100%; height: 150px; object-fit: cover; }
+        .card-body { padding: 18px; }
+        h2 { margin: 0 0 8px; color: #124b35; font-size: 1.25rem; }
+        .card p { margin: 6px 0; color: #6d776f; font: 0.85rem Arial, sans-serif; }
+        .empty { padding: 32px; border: 1px dashed #cfe2d5; border-radius: 12px; background: white; color: #6d776f; text-align: center; font: 0.9rem Arial, sans-serif; }
+        @media (max-width: 560px) { header { display: block; } header a { margin-top: 16px; } }
+    </style>
+</head>
+<body>
+    <main>
+    <header>
+        <div><h1>Restaurants</h1><p>Find your next favorite meal.</p></div>
+        <a href="{% url 'index' %}">Back home</a>
+    </header>
+
+    {% if restaurants %}
+        <section class="grid">
+        {% for restaurant in restaurants %}
+            <article class="card">
+                {% if restaurant.photo %}
+                    <img src="{{ restaurant.photo.url }}" alt="{{ restaurant.name }}" width="240">
+                {% elif restaurant.picture %}
+                    <img src="{{ restaurant.picture }}" alt="{{ restaurant.name }}" width="240">
+                {% endif %}
+                <div class="card-body">
+                    <h2>{{ restaurant.name }}</h2>
+                    <p>Cuisine: {{ restaurant.cuisine }}</p>
+                    <p>Rating: {{ restaurant.rating }} / 5</p>
+                </div>
+            </article>
+        {% endfor %}
+        </section>
+    {% else %}
+        <p class="empty">No restaurants have been added yet.</p>
+    {% endif %}
+    </main>
+</body>
+</html>

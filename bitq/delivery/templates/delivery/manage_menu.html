@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BitQ | Manage {{ restaurant.name }} menu</title>
+    <style>
+        :root { --page: #f2f6f4; --panel: #fff; --ink: #1d3029; --muted: #687970; --line: #dce7df; --brand: #1d6e4d; --accent: #d66b45; --danger: #ad4545; }
+        * { box-sizing: border-box; }
+        body { margin: 0; min-height: 100vh; background: var(--page); color: var(--ink); font-family: Arial, sans-serif; }
+        header { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; padding: 16px max(24px, calc((100% - 1180px) / 2)); background: var(--panel); border-bottom: 1px solid var(--line); }
+        header strong { color: var(--brand); font-size: 1.1rem; }
+        nav { display: flex; gap: 9px; flex-wrap: wrap; }
+        nav a, .button { display: inline-flex; align-items: center; justify-content: center; padding: 9px 12px; border: 1px solid var(--line); border-radius: 7px; background: var(--panel); color: var(--ink); font-size: 0.8rem; font-weight: 700; text-decoration: none; cursor: pointer; }
+        main { width: min(1180px, calc(100% - 40px)); margin: 34px auto 60px; }
+        h1 { margin: 0 0 8px; font: 700 2rem Georgia, serif; }
+        .muted { color: var(--muted); }
+        .layout { display: grid; grid-template-columns: minmax(270px, 0.8fr) minmax(0, 1.7fr); gap: 20px; margin-top: 24px; align-items: start; }
+        .panel { padding: 22px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); }
+        .panel h2 { margin: 0 0 5px; font-size: 1.15rem; }
+        .panel > p { margin: 0 0 18px; color: var(--muted); font-size: 0.82rem; }
+        label { display: block; margin: 13px 0 6px; font-size: 0.78rem; font-weight: 700; }
+        input[type="text"], input[type="url"], input[type="number"], textarea { width: 100%; padding: 10px 11px; border: 1px solid var(--line); border-radius: 6px; background: #fbfdfb; color: var(--ink); font: 0.85rem Arial, sans-serif; }
+        textarea { resize: vertical; }
+        input[type="checkbox"] { accent-color: var(--brand); }
+        .check-row { display: flex; align-items: center; gap: 8px; margin: 14px 0; color: var(--muted); font-size: 0.82rem; }
+        .primary { width: 100%; margin-top: 8px; border-color: var(--brand); background: var(--brand); color: #fff; }
+        .items { display: grid; gap: 12px; }
+        .item-row { display: grid; grid-template-columns: minmax(130px, 1fr) auto auto; align-items: center; gap: 14px; padding: 14px; border: 1px solid var(--line); border-radius: 8px; }
+        .item-name { display: block; font-weight: 700; }
+        .item-detail { margin-top: 5px; color: var(--muted); font-size: 0.78rem; }
+        .item-price { color: #a56d24; font-weight: 800; white-space: nowrap; }
+        .row-actions { display: flex; align-items: center; gap: 7px; }
+        .edit-link { color: var(--brand); }
+        .delete-button { border-color: #e8c9c2; color: var(--danger); }
+        .edit-form { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px 12px; padding-top: 12px; border-top: 1px solid var(--line); }
+        .edit-form .check-row, .edit-form .form-actions { grid-column: 1 / -1; }
+        .errorlist { margin: 5px 0; padding-left: 18px; color: var(--danger); font-size: 0.76rem; }
+        .notice { margin: 14px 0 0; color: var(--brand); font-weight: 700; font-size: 0.84rem; }
+        .empty { padding: 24px; text-align: center; color: var(--muted); border: 1px dashed var(--line); border-radius: 8px; }
+        @media (max-width: 800px) { .layout { grid-template-columns: 1fr; } }
+        @media (max-width: 520px) { main { width: calc(100% - 28px); margin-top: 24px; } .item-row { grid-template-columns: 1fr auto; } .row-actions { grid-column: 1 / -1; } .edit-form { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <header>
+        <strong>BitQ Admin</strong>
+        <nav aria-label="Admin navigation">
+            <a href="{% url 'dashboard' %}">Dashboard</a>
+            <a href="{% url 'restaurant_list' %}">Restaurants</a>
+            <a href="{% url 'admin_orders' %}">Orders</a>
+            <a href="{% url 'logout' %}">Sign out</a>
+        </nav>
+    </header>
+    <main>
+        <h1>{{ restaurant.name }} menu</h1>
+        <p class="muted">Add dishes, edit prices, or remove unavailable items.</p>
+        {% if messages %}{% for message in messages %}<p class="notice">{{ message }}</p>{% endfor %}{% endif %}
+        <div class="layout">
+            <section class="panel">
+                <h2>Add a menu item</h2>
+                <p>New items appear on the restaurant menu.</p>
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="add">
+                    {{ item_form.non_field_errors }}
+                    <label for="id_name">Name</label>{{ item_form.name }}{{ item_form.name.errors }}
+                    <label for="id_description">Description</label>{{ item_form.description }}{{ item_form.description.errors }}
+                    <label for="id_price">Price (₹)</label>{{ item_form.price }}{{ item_form.price.errors }}
+                    <label class="check-row">{{ item_form.vegeterian }} Vegetarian</label>
+                    <label for="id_picture">Photo URL</label>{{ item_form.picture }}{{ item_form.picture.errors }}
+                    <button class="button primary" type="submit">Add item</button>
+                </form>
+            </section>
+            <section class="panel">
+                <h2>Current items · {{ items|length }}</h2>
+                <p>Items and prices currently shown to customers.</p>
+                <div class="items">
+                    {% for item in items %}
+                    <article class="item-row">
+                        <div><span class="item-name">{{ item.name }}</span><span class="item-detail">{% if item.vegeterian %}Vegetarian{% else %}Non-vegetarian{% endif %} · {{ item.description }}</span></div>
+                        <span class="item-price">₹{{ item.price|floatformat:2 }}</span>
+                        <div class="row-actions">
+                            {% if editing_item.id == item.id %}<a class="button edit-link" href="{% url 'update_menu' restaurant.id %}">Cancel</a>{% else %}<a class="button edit-link" href="?edit={{ item.id }}">Edit</a>{% endif %}
+                            <form method="post" onsubmit="return confirm('Remove {{ item.name|escapejs }} from this menu?')">
+                                {% csrf_token %}<input type="hidden" name="action" value="delete"><input type="hidden" name="item_id" value="{{ item.id }}">
+                                <button class="button delete-button" type="submit">Remove</button>
+                            </form>
+                        </div>
+                        {% if editing_item.id == item.id %}
+                        <form class="edit-form" method="post">
+                            {% csrf_token %}<input type="hidden" name="action" value="update"><input type="hidden" name="item_id" value="{{ item.id }}">
+                            {{ edit_form.non_field_errors }}
+                            <div><label for="id_edit-name">Name</label>{{ edit_form.name }}{{ edit_form.name.errors }}</div>
+                            <div><label for="id_edit-price">Price (₹)</label>{{ edit_form.price }}{{ edit_form.price.errors }}</div>
+                            <div style="grid-column:1/-1"><label for="id_edit-description">Description</label>{{ edit_form.description }}{{ edit_form.description.errors }}</div>
+                            <label class="check-row" for="id_edit-vegeterian">{{ edit_form.vegeterian }} Vegetarian</label>
+                            <div><label for="id_edit-picture">Photo URL</label>{{ edit_form.picture }}{{ edit_form.picture.errors }}</div>
+                            <div class="form-actions"><button class="button primary" type="submit">Save changes</button></div>
+                        </form>
+                        {% endif %}
+                    </article>
+                    {% empty %}<p class="empty">No dishes yet. Add the first menu item.</p>{% endfor %}
+                </div>
+            </section>
+        </div>
+    </main>
+</body>
+</html>

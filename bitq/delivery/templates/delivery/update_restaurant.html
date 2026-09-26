@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Restaurant</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #fff7ed, #ffedd5);
+            margin: 0;
+            display: grid;
+            place-items: center;
+            min-height: 100vh;
+        }
+
+        form {
+            width: min(100%, 480px);
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 15px 35px rgba(124, 45, 18, 0.12);
+        }
+
+        h2 {
+            text-align: center;
+            color: #9a3412;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-top: 16px;
+            font-weight: 700;
+            color: #7c2d12;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px 12px;
+            margin-top: 8px;
+            border: 1px solid #fdba74;
+            border-radius: 8px;
+        }
+
+        button {
+            margin-top: 20px;
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: #ea580c;
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .error {
+            color: #b91c1c;
+            background: #fee2e2;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+    </style>
+</head>
+<body>
+    <form method="post" action="{% url 'update_restaurant' restaurant.id %}">
+        {% csrf_token %}
+        <h2>Update Restaurant</h2>
+
+        {% if error %}
+            <div class="error">{{ error }}</div>
+        {% endif %}
+
+        <label>Restaurant name</label>
+        <input type="text" name="name" value="{{ restaurant.name }}">
+
+        <label>Picture URL</label>
+        <input type="text" name="picture" value="{{ restaurant.picture }}">
+
+        <label>Cuisine</label>
+        <input type="text" name="cuisine" value="{{ restaurant.cuisine }}">
+
+        <label>Rating</label>
+        <input type="number" name="rating" min="0" max="5" step="0.1" value="{{ restaurant.rating }}">
+
+        <button type="submit">Update Restaurant</button>
+    </form>
+</body>
+</html>

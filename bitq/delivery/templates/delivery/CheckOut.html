@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BitQ | Checkout</title>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <style>
+        :root {
+            --page-bg: #eff5f5;
+            --bg: #f4f7f3;
+            --panel: #ffffff;
+            --text: #192b35;
+            --muted: #657983;
+            --line: #dce7e7;
+            --brand: #176b72;
+            --brand-dark: #124f59;
+            --accent: #e76f51;
+            --price: #bd792d;
+        }
+
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: var(--page-bg);
+            color: var(--text);
+            font-family: Arial, sans-serif;
+            padding: 24px;
+        }
+
+        body.dark {
+            --page-bg: #16282f;
+            --bg: #111827;
+            --panel: #20353d;
+            --text: #edf4f3;
+            --muted: #b0c2c5;
+            --line: #3a5059;
+            --brand: #81cbd0;
+            --brand-dark: #9cdde0;
+            --accent: #df806a;
+            --price: #e8bc75;
+        }
+
+        .shell {
+            width: min(1100px, 100%);
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 22px;
+        }
+
+        .panel {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            box-shadow: 0 20px 45px rgba(15, 23, 42, 0.06);
+            padding: 24px;
+        }
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 22px;
+            flex-wrap: wrap;
+        }
+
+        .nav-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn, .primary-btn, .secondary-btn, .theme-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 16px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 700;
+            cursor: pointer;
+            border: none;
+        }
+
+        .nav-btn, .secondary-btn { background: var(--panel); color: var(--text); border: 1px solid var(--line); }
+        .primary-btn { background: var(--brand); color: white; }
+        .theme-btn { background: var(--navy); color: white; }
+
+        h1, h2, h3 { margin-top: 0; }
+        h1 { color: var(--brand-dark); }
+        .muted { color: var(--muted); margin: 4px 0 0; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 18px;
+        }
+
+        th, td {
+            padding: 14px 12px;
+            border-bottom: 1px solid var(--line);
+            text-align: left;
+        }
+
+        th {
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            font-size: 0.72rem;
+        }
+
+        .totals {
+            margin-top: 18px;
+            padding-top: 18px;
+            border-top: 1px solid var(--line);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .amount { font-size: 2rem; font-weight: 800; color: var(--price); }
+
+        .payment-options {
+            display: grid;
+            gap: 12px;
+            margin-top: 18px;
+        }
+
+        .payment-option {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 14px 16px;
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            background: rgba(255,255,255,0.02);
+        }
+
+        .radio-block {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+        }
+
+        .radio-block input { accent-color: var(--brand); }
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 999px;
+            padding: 5px 10px;
+            background: #ecfdf5;
+            color: var(--green-dark);
+            font-size: 0.7rem;
+            font-weight: 800;
+        }
+
+        .error {
+            padding: 12px 14px;
+            border-radius: 10px;
+            background: #fff1f2;
+            color: #b91c1c;
+            border: 1px solid #fecdd3;
+            margin-top: 12px;
+            font-weight: 700;
+        }
+
+        .order-line { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 13px 0; border-bottom: 1px solid var(--line); }
+        .order-line:last-child { border-bottom: 0; }
+        .line-name { font-weight: 700; }
+        .line-detail { margin-top: 4px; color: var(--muted); font-size: 0.82rem; }
+        .summary-total { display: flex; justify-content: space-between; gap: 14px; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--line); font-weight: 700; }
+        .summary-total strong { color: var(--price); font-size: 1.5rem; }
+        .payment-hint { color: var(--muted); font-size: 0.84rem; line-height: 1.5; }
+        .pay-button { width: 100%; margin-top: 14px; padding: 14px; border: 0; border-radius: 9px; background: var(--accent); color: white; font-weight: 800; cursor: pointer; }
+        .scroll-table { overflow-x: auto; }
+        @media (max-width: 520px) { body { padding: 16px; } .panel { padding: 18px; } .payment-option { align-items: flex-start; } }
+
+        @media (max-width: 840px) {
+            .shell { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="shell">
+        <div class="panel">
+            <div class="topbar">
+                <div>
+                    <h1>Checkout</h1>
+                    <p class="muted">Welcome, {{ username }}</p>
+                </div>
+                <div class="nav-row">
+                    <a class="nav-btn" href="{% url 'show_cart' username %}">Back to cart</a>
+                    <a class="nav-btn" href="{% url 'customer_home' username %}">Restaurants</a>
+                    <button class="theme-btn" id="theme-toggle" type="button" aria-pressed="false">Dark mode</button>
+                </div>
+            </div>
+
+            {% if error %}
+                <p class="error">{{ error }}</p>
+            {% else %}
+                <div class="scroll-table"><table>
+                    <thead>
+                        <tr>
+                            <th>Order item</th>
+                            <th>Price</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for line in cart_items %}
+                        <tr>
+                            <td><strong>{{ line.item.name }}</strong><div class="line-detail">{{ line.item.restaurant.name }} · Qty {{ line.quantity }}</div></td>
+                            <td>₹{{ line.subtotal|floatformat:2 }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table></div>
+
+                <div class="totals">
+                    <span class="muted">Total amount</span>
+                    <span class="amount">₹{{ total_price|floatformat:2 }}</span>
+                </div>
+
+                <h3>Choose payment method</h3>
+                <form method="post" id="payment-form">
+                    {% csrf_token %}
+                    <div class="payment-options">
+                        <label class="payment-option">
+                            <span class="radio-block"><input type="radio" name="payment_method" value="cash" {% if selected_method == 'cash' %}checked{% endif %}> Cash on delivery</span>
+                            <span class="badge">COD</span>
+                        </label>
+                        <label class="payment-option">
+                            <span class="radio-block"><input type="radio" name="payment_method" value="razorpay" {% if selected_method == 'razorpay' %}checked{% endif %}> Online payment with Razorpay</span>
+                            <span class="badge">Cards · UPI · wallets</span>
+                        </label>
+                    </div>
+
+                </form>
+
+                {% if selected_method == 'razorpay' %}
+                <div style="margin-top: 18px;">
+                    <button class="primary-btn" id="rzp-button">Pay with Razorpay</button>
+                </div>
+                <script>
+                    var options = {
+                        "key": "{{ razorpay_key_id }}",
+                        "amount": {{ amount_paise }},
+                        "currency": "INR",
+                        "name": "BitQ",
+                        "description": "Order Payment",
+                        "order_id": "{{ order_id }}",
+                        "handler": function (response) {
+                            var paymentForm = document.getElementById('razorpay-confirmation');
+                            paymentForm.elements['razorpay_payment_id'].value = response.razorpay_payment_id;
+                            paymentForm.elements['razorpay_order_id'].value = response.razorpay_order_id;
+                            paymentForm.elements['razorpay_signature'].value = response.razorpay_signature;
+                            paymentForm.submit();
+                        },
+                        "prefill": {
+                            "name": "{{ username|escapejs }}",
+                            "email": "{{ customer_email|escapejs }}",
+                            "contact": "{{ customer_mobile|escapejs }}"
+                        },
+                        "theme": {
+                            "color": "#ea580c"
+                        }
+                    };
+
+                    var rzp = new Razorpay(options);
+                    document.getElementById('rzp-button').onclick = function(e) {
+                        rzp.open();
+                        e.preventDefault();
+                    };
+                </script>
+                <form id="razorpay-confirmation" method="post" action="{% url 'payment_success' username 'razorpay' %}" hidden>
+                    {% csrf_token %}
+                    <input name="razorpay_payment_id">
+                    <input name="razorpay_order_id">
+                    <input name="razorpay_signature">
+                </form>
+                {% endif %}
+            {% endif %}
+        </div>
+
+        <div class="panel">
+            <h2>Order summary</h2>
+            {% for line in cart_items %}
+            <div class="order-line"><div><div class="line-name">{{ line.item.name }} × {{ line.quantity }}</div><div class="line-detail">{{ line.item.restaurant.name }}</div></div><strong>₹{{ line.subtotal|floatformat:2 }}</strong></div>
+            {% endfor %}
+            <div class="summary-total"><span>Total</span><strong>₹{{ total_price|floatformat:2 }}</strong></div>
+            <p class="payment-hint">Cash on delivery is available. Online payments open Razorpay for cards, UPI, and wallets.</p>
+            {% if not error %}<button class="pay-button" type="submit" form="payment-form">Continue to payment · ₹{{ total_price|floatformat:2 }}</button>{% endif %}
+            <a class="nav-btn" style="margin-top:10px; width:100%;" href="{% url 'show_cart' username %}">Back to cart</a>
+        </div>
+    </div>
+    <script>
+        const themeToggle = document.getElementById('theme-toggle');
+        const applyTheme = (theme) => {
+            document.body.classList.toggle('dark', theme === 'dark');
+            themeToggle.textContent = theme === 'dark' ? 'Light mode' : 'Dark mode';
+            themeToggle.setAttribute('aria-pressed', String(theme === 'dark'));
+        };
+        applyTheme(localStorage.getItem('bitq-theme') || 'light');
+        themeToggle.addEventListener('click', () => {
+            const theme = document.body.classList.contains('dark') ? 'light' : 'dark';
+            localStorage.setItem('bitq-theme', theme);
+            applyTheme(theme);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,33 @@
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path('', views.index, name='index'),
+    path('home/<str:username>/', views.customer_home, name='customer_home'),
+    path('signup/', views.signup, name='signup'),
+    path('open_sighup/', views.open_sighup, name='open_sighup'),
+    path('signin/', views.signin, name='signin'),
+    path('signin', views.signin),
+    path('admin-access/', views.admin_access, name='admin_access'),
+    path('logout/', views.logout_view, name='logout'),
+    path('dashboard/', views.dashboard, name='dashboard'),
+    path('manage/orders/', views.admin_orders, name='admin_orders'),
+    path('manage/orders/<int:order_id>/status/', views.update_order_status, name='update_order_status'),
+    path('feedback/', views.submit_feedback, name='submit_feedback'),
+    path('open_add_restaurant/', views.open_add_restaurant, name='open_add_restaurant'),
+    path('add_restaurant/', views.open_add_restaurant, name='add_restaurant'),
+    path('restaurants/', views.restaurant_list, name='restaurant_list'),
+    path('open_show_restaurant/', views.restaurant_list, name='open_show_restaurant'),
+    path('restaurants/<int:restaurant_id>/view/', views.restaurant_detail, name='restaurant_detail'),
+    path('restaurants/<int:restaurant_id>/update/', views.update_restaurant, name='update_restaurant'),
+    path('restaurants/<int:restaurant_id>/delete/', views.delete_restaurant, name='delete_restaurant'),
+    path('restaurants/<int:restaurant_id>/menu/', views.update_menu, name='update_menu'),
+    path('view_menu/<int:restaurant_id>/<str:username>/', views.view_menu, name='view_menu'),
+    path('add_to_cart/<int:item_id>/<str:username>/', views.add_to_cart, name='add_to_cart'),
+    path('cart/<str:username>/item/<int:item_id>/<str:action>/', views.update_cart_quantity, name='update_cart_quantity'),
+    path('cart/<str:username>/remove/<int:item_id>/', views.remove_from_cart, name='remove_from_cart'),
+    path('show_cart/<str:username>', views.show_cart, name='show_cart'),
+    path('checkout/<str:username>/', views.checkout, name='checkout'),
+    path('payment_success/<str:username>/<str:payment_method>/', views.payment_success, name='payment_success'),
+    path('order_history/<str:username>/', views.order_history, name='order_history'),
+]
