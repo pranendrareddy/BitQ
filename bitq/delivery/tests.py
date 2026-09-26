@@ -7,6 +7,12 @@ from .models import Customer, Feedback, Item, Order, Restaurant
 
 
 class SignupTests(TestCase):
+	@override_settings(DEBUG=False, SECURE_SSL_REDIRECT=True, SECURE_REDIRECT_EXEMPT=[r'^healthz$'])
+	def test_health_check_is_available_over_internal_http(self):
+		response = self.client.get('/healthz')
+		self.assertEqual(response.status_code, 200)
+		self.assertEqual(response.content, b'ok')
+
 	def test_signup_page_renders(self):
 		response = self.client.get('/signup/')
 

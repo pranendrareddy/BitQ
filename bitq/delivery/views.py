@@ -20,6 +20,10 @@ def index(request):
     return render(request, 'delivery/index.html')
 
 
+def health_check(request):
+    return HttpResponse('ok', content_type='text/plain')
+
+
 def customer_home(request, username):
     customer = get_object_or_404(Customer, username=username)
     return render(request, 'Customer_Home.html', customer_home_context(customer))
