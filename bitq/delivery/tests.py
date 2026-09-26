@@ -1,5 +1,5 @@
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from razorpay.errors import SignatureVerificationError
 from unittest.mock import patch
 
@@ -456,6 +456,7 @@ class RestaurantTests(TestCase):
 		self.assertContains(response, 'Taco Plate')
 
 	@patch('delivery.views.razorpay.Client')
+	@override_settings(RAZORPAY_KEY_ID='test_key', RAZORPAY_KEY_SECRET='test_secret')
 	def test_razorpay_checkout_uses_paise_and_verifies_callback(self, razorpay_client):
 		customer = Customer.objects.create(
 			username='online-user',
@@ -487,7 +488,26 @@ class RestaurantTests(TestCase):
 		self.assertTrue(Order.objects.filter(customer=customer, payment_method='razorpay').exists())
 		razorpay_client.return_value.utility.verify_payment_signature.assert_called_once()
 
+	def test_online_checkout_is_disabled_without_razorpay_credentials(self):
+		customer = Customer.objects.create(
+			username='cash-only-user',
+			password='password',
+			email='cash-only@example.com',
+			mobile='1234567890',
+			address='Cash street',
+		)
+		item = Item.objects.create(restaurant=self.restaurant, name='Market Salad', description='Greens and herbs.', price=190)
+		cart = customer.cart.create()
+		cart.items.add(item)
+
+		response = self.client.post('/checkout/cash-only-user/', {'payment_method': 'razorpay'})
+
+		self.assertEqual(response.status_code, 503)
+		self.assertContains(response, 'Online payment is not configured', status_code=503)
+		self.assertFalse(Order.objects.filter(customer=customer).exists())
+
 	@patch('delivery.views.razorpay.Client')
+	@override_settings(RAZORPAY_KEY_ID='test_key', RAZORPAY_KEY_SECRET='test_secret')
 	def test_invalid_razorpay_signature_does_not_create_order(self, razorpay_client):
 		customer = Customer.objects.create(
 			username='invalid-payment-user',

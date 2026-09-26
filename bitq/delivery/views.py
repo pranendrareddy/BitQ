@@ -469,11 +469,22 @@ def checkout(request, username):
                 'username': username,
                 'cart_items': cart_items,
                 'total_price': total_price,
+                'razorpay_configured': bool(settings.RAZORPAY_KEY_ID and settings.RAZORPAY_KEY_SECRET),
                 'selected_method': 'razorpay',
                 'error': 'Choose cash on delivery or secure online payment.',
             }, status=400)
 
         if method == 'razorpay':
+            if not settings.RAZORPAY_KEY_ID or not settings.RAZORPAY_KEY_SECRET:
+                return render(request, 'delivery/CheckOut.html', {
+                    'username': username,
+                    'cart_items': cart_items,
+                    'total_price': total_price,
+                    'razorpay_configured': False,
+                    'selected_method': 'cash',
+                    'error': 'Online payment is not configured on this deployment. Cash on delivery is available.',
+                }, status=503)
+
             client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
             order_data = {
                 'amount': int(total_price * 100),
@@ -491,6 +502,7 @@ def checkout(request, username):
                 'order_id': order['id'],
                 'amount_paise': order_data['amount'],
                 'selected_method': method,
+                'razorpay_configured': True,
                 'customer_email': customer.email,
                 'customer_mobile': customer.mobile,
             })
@@ -499,6 +511,7 @@ def checkout(request, username):
         'username': username,
         'cart_items': cart_items,
         'total_price': total_price,
+        'razorpay_configured': bool(settings.RAZORPAY_KEY_ID and settings.RAZORPAY_KEY_SECRET),
         'selected_method': 'cash',
     })
 

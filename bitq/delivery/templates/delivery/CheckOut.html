@@ -235,10 +235,14 @@
                             <span class="radio-block"><input type="radio" name="payment_method" value="cash" {% if selected_method == 'cash' %}checked{% endif %}> Cash on delivery</span>
                             <span class="badge">COD</span>
                         </label>
-                        <label class="payment-option">
-                            <span class="radio-block"><input type="radio" name="payment_method" value="razorpay" {% if selected_method == 'razorpay' %}checked{% endif %}> Online payment with Razorpay</span>
-                            <span class="badge">Cards · UPI · wallets</span>
-                        </label>
+                        {% if razorpay_configured %}
+                            <label class="payment-option">
+                                <span class="radio-block"><input type="radio" name="payment_method" value="razorpay" {% if selected_method == 'razorpay' %}checked{% endif %}> Online payment with Razorpay</span>
+                                <span class="badge">Cards · UPI · wallets</span>
+                            </label>
+                        {% else %}
+                            <p class="payment-hint">Online payment is unavailable until Razorpay keys are configured. Cash on delivery is available.</p>
+                        {% endif %}
                     </div>
 
                 </form>
